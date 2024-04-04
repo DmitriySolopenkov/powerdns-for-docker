@@ -1,20 +1,21 @@
 FROM debian:buster-20240311
 
-ENV PDNS_REPO http://repo.powerdns.com/debian buster-auth-49 main
+ENV DEBIAN_FRONTEND noninteractive
 
 SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
 
+COPY src/ /
+
 RUN apt-get update ;\
-    apt-get -y install \
-        tzdata \
+    apt-get -y install --no-install-recommends \
+        curl \
         gnupg; \
-    echo "deb $PDNS_REPO /" > /etc/apt/sources.list.d/bareos.list ;\
-    install -d /etc/apt/keyrings; \
-    curl https://repo.powerdns.com/FD380FBB-pub.asc | tee /etc/apt/keyrings/auth-49-pub.asc ;\
+    apt-key adv --no-tty --fetch-keys https://repo.powerdns.com/FD380FBB-pub.asc;\
     apt-get update ;\
-    apt-get install \
-        pdns-server=4.9.0-1pdns.buster \
-        pdns-backend-bind=4.9.0-1pdns.buster ;\
+    apt-get install -y --no-install-recommends \
+        pdns-server \
+        pdns-backend-bind \
+        pdns-tools ;\
     apt-get clean ;\
     rm -rf /var/lib/apt/lists/*
 
