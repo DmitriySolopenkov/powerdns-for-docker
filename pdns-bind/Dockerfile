@@ -1,23 +1,22 @@
-FROM debian:buster-20240311
+FROM debian:bookworm
 
 ENV DEBIAN_FRONTEND noninteractive
 
-SHELL ["/bin/bash", "-exo", "pipefail", "-c"]
-
-COPY src/ /
-
-RUN apt-get update ;\
-    apt-get -y install --no-install-recommends \
+RUN apt-get update \
+    && apt-get install -y \
         curl \
-        gnupg; \
-    install -d /etc/apt/keyrings; curl https://repo.powerdns.com/FD380FBB-pub.asc | tee /etc/apt/keyrings/auth-49-pub.asc;\
-    apt-get update ;\
-    apt-get install -y --no-install-recommends \
+        gnupg2 \
+        apt-transport-https \
+    && echo "deb [signed-by=/etc/apt/keyrings/auth-49-pub.asc arch=amd64] http://repo.powerdns.com/debian bookworm-auth-49 main" > /etc/apt/sources.list.d/pdns.list \
+    && install -d /etc/apt/keyrings \
+    && curl https://repo.powerdns.com/FD380FBB-pub.asc | tee /etc/apt/keyrings/auth-49-pub.asc \
+    && apt-get update \
+    && apt-get install -y \
         pdns-server \
         pdns-backend-bind \
-        pdns-tools ;\
-    apt-get clean ;\
-    rm -rf /var/lib/apt/lists/*
+        pdns-tools \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 EXPOSE 53
 EXPOSE 8081
