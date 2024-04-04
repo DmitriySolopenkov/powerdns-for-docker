@@ -1,0 +1,40 @@
+version: "3.8"
+
+services:
+  pdns-server:
+    container_name: pdns-server
+    restart: always
+    build: ./pdns-bind/
+    networks:
+      - default
+    ports:
+      - 53:53
+      - 8081:8081
+    volumes: pdns-bind/config/powerdns:/etc/powerdns:ro
+
+  powerdns-admin:
+    image: powerdnsadmin/pda-legacy:v0.4.2
+    logging:
+      driver: json-file
+      options:
+        max-size: 50m
+    environment:
+      # - SQLALCHEMY_DATABASE_URI=postgresql://pdns:db-pass@postgres/db-name
+      - GUNICORN_TIMEOUT=60
+      - GUNICORN_WORKERS=2
+      - GUNICORN_LOGLEVEL=DEBUG
+    networks:
+      - default
+    ports:
+      - 80:80
+    depends_on:
+      - pdns-server
+
+networks:
+  default:
+
+volumes:
+  staticfiles:
+    driver: local
+  uploads:
+    driver: local
