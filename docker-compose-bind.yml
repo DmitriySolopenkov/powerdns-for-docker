@@ -32,9 +32,3 @@ services:
 
 networks:
   default:
-
-volumes:
-  staticfiles:
-    driver: local
-  uploads:
-    driver: local
