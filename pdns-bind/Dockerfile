@@ -10,7 +10,7 @@ RUN apt-get update ;\
     apt-get -y install --no-install-recommends \
         curl \
         gnupg; \
-    apt-key adv --no-tty --fetch-keys https://repo.powerdns.com/FD380FBB-pub.asc;\
+    install -d /etc/apt/keyrings; curl https://repo.powerdns.com/FD380FBB-pub.asc | tee /etc/apt/keyrings/auth-49-pub.asc;\
     apt-get update ;\
     apt-get install -y --no-install-recommends \
         pdns-server \
